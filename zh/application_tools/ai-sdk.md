@@ -332,7 +332,7 @@ LLM 对话：
 curl -s -X POST localhost:18790/v1/chat/completions \
   -H 'Content-Type: application/json' \
   -d '{
-    "model":"default",
+    "model":"qwen3-0.6b-q4_0",
     "messages":[{"role":"user","content":"你好，请用一句话介绍你自己"}],
     "stream":false
   }' | jq .
