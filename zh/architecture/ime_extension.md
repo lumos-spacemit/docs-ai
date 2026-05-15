@@ -2176,3 +2176,13 @@ for (p = 0; p < (VLEN * LMUL / pack_len); p++) {
 |A100|`Xsmti4*16mm_scl16f`：面向分块量化的整数矩阵乘法指令|Int4 + scale|FP16 / BF16|`8 × 32 × 8`|
 |A100|`Xsmt*16fp32mm`：浮点矩阵乘法指令|FP16 / BF16|FP32|`8 × 8 × 8`|
 |A100|`Xsmt*16fp32mm_slide`：面向卷积场景的浮点滑窗矩阵乘法|FP16 / BF16|FP32|`8 × 8 × 8`|
+
+# 附录 B. 工具链实现
+
+## B.1 指令前缀
+
+SpacemiT 的 Vendor 前缀为 [SMT](https://github.com/riscv-non-isa/riscv-toolchain-conventions/blob/main/src/toolchain-conventions.adoc#list-of-vendor-prefixes)。在开源工具链实现中，上述所有指令均需添加 `smt.` 前缀。
+
+## B.2 扩展名
+
+为便于与 Zvvm 等标准扩展进行对比，本文档将相关指令划分为多个细粒度扩展。考虑到 Zvvm 扩展规范尚未最终定稿，当前工具链实现对扩展名进行了简化：A60 所支持的所有扩展统称为 `Xsmtvdot` 扩展，A100 所支持的所有扩展统称为 `Xsmtvdotii` 扩展。

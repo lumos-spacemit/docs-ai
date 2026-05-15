@@ -2325,3 +2325,13 @@ where,
 | A100           | `Xsmti4*16mm_scl16f`: <br>block-quantized integer matrix multiplication                             | Int4 + scale | FP16 / BF16 | `8 × 32 × 8`  |
 | A100           | `Xsmt*16fp32mm`: <br>floating-point matrix multiplication                                           | FP16 / BF16  | FP32        | `8 × 8 × 8`   |
 | A100           | `Xsmt*16fp32mm_slide`: <br>convolution-oriented floating-point sliding-window matrix multiplication | FP16 / BF16  | FP32        | `8 × 8 × 8`   |
+
+# Appendix B. Toolchain Implementation
+
+## B.1 Instruction Prefix
+
+The SpacemiT vendor prefix is [SMT](https://github.com/riscv-non-isa/riscv-toolchain-conventions/blob/main/src/toolchain-conventions.adoc#list-of-vendor-prefixes). In open-source toolchain implementations, all instructions listed in this document must be prefixed with `smt.`.
+
+## B.2 Extension Names
+
+To facilitate comparison with standard extensions such as `Zvvm`, this document organizes the instructions into multiple fine-grained sub-extensions. Given that the `Zvvm` specification has not yet been finalized, the current toolchain implementation uses simplified extension names: all sub-extensions supported by A60 are collectively referred to as the `Xsmtvdot` extension, and all sub-extensions supported by A100 are collectively referred to as the `Xsmtvdotii` extension.
