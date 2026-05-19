@@ -151,21 +151,21 @@ curl -X POST http://127.0.0.1:8080/v1/chat/completions \
 
 ![](../images/llama-server-chrome.png)
 
-### 多模态模型下载使用方法
+### 多模态模型下载使用
 
 因多模态模型的使用与标准的大语言模型有一些差异，这里单独进行说明。
 
 #### 模型下载
 
-多模态模型需要进迭这边进行拆分才能够在llama.cpp中运行，拆分后的模型下载位置在：https://archive.spacemit.com/spacemit-ai/model_zoo/vlm/，目前比较受欢迎的几个模型为：
+多模态模型需要进迭这边进行拆分才能够在llama.cpp中运行，拆分后的模型下载位置在：([https://archive.spacemit.com/spacemit-ai/model_zoo/vlm/](https://archive.spacemit.com/spacemit-ai/model_zoo/vlm/))，目前比较受欢迎的几个模型为：
 
 - Qwen3.5-0.8B
 - Qwen3.5-2B
 - Qwen3.5-4B
-- fastvlm-0.5B
 - Qwen3-VL-30B-A3B
+- fastvlm-0.5B
 
-下面以上面几个模型为例，介绍使用方法。
+下面以上面部分模型为例，介绍使用方法。
 
 #### 模型准备
 
@@ -178,11 +178,11 @@ curl -X POST http://127.0.0.1:8080/v1/chat/completions \
 ![](../images/qwen35-0.8b-folder-structure.png)
 
 目录结构说明如下：
-- config.json:模型配置文件，下面细说
-- qwen3_5vl_0.8b-text-q41.gguf:VLM模型分离出来的大语言模型
-- qwen3_5vl_0.8b-vision-224-op23.fp16.onnx:VLM模型分离出来的vision模型，输入224x224
-- qwen3_5vl_0.8b-vision-384-op23.fp16.onnx:VLM模型分离出来的vision模型，输入384x384
-- qwen3_5vl_0.8b-vision-768-op23.fp16.onnx:VLM模型分离出来的vision模型，输入768x768
+- **config.json**: 模型配置文件，下面详细说明
+- **qwen3_5vl_0.8b-text-q41.gguf**: VLM模型分离出来的大语言模型部分
+- **qwen3_5vl_0.8b-vision-224-op23.fp16.onnx**: VLM模型分离出来的vision模型部分，输入224x224
+- **qwen3_5vl_0.8b-vision-384-op23.fp16.onnx**: VLM模型分离出来的vision模型部分，输入384x384
+- **qwen3_5vl_0.8b-vision-768-op23.fp16.onnx**: VLM模型分离出来的vision模型部分，输入768x768
 
 config.json配置文件说明：
 
@@ -192,10 +192,10 @@ config.json配置文件说明：
     "Qwen3_5ForConditionalGeneration"
   ],
   "vision_model": {
-    "model_path": "./qwen3_5vl_0.8b-vision-384-op23.f16.onnx", //指定vision模型路径
+    "model_path": "./qwen3_5vl_0.8b-vision-384-op23.f16.onnx", //按照图片分辨率指定vision模型路径
     "input_size": 384,                                         //指定模型输入size，与上面的模型对应
-    "spacemit_ep_intra_thread_num": 4,
-    "spacemit_ep_inter_thread_num": 1
+    "spacemit_ep_intra_thread_num": 4,                         //并行推理线程数量
+    "spacemit_ep_inter_thread_num": 1                          //并行session数量，一般为1
   },
   "text_model": {
     "model_path": "./qwen3_5vl_0.8b-text-q41.gguf",            //指定大语言模型路径
@@ -213,13 +213,13 @@ llama-server -m qwen3_5vl_0.8b-text-q41.gguf --media-backend smt --smt-config-di
 ```
 参数说明：
 - -m: 指定.gguf格式模型文件的路径
-- --media-backend: 
-- --smt-config-dir: 
+- --media-backend: 指定vision后端，默认为smt
+- --smt-config-dir: 指定vision配置路径
 - -t: 指定运行测试时使用的线程数量（K3:<=8,K1:<=4）
 - --host: 指定服务器监听的 IP 地址
 - --port: 设置服务器监听的端口号，默认为 8080
-- --reasoning-budget: 
-- --reasoning: 
+- --reasoning-budget: 控制大模型‌思维链（reasoning）行为‌的参数
+- --reasoning: 开关思考
 
 这个过程中，有一个加载模型的步骤，比较耗时，模型越大越耗时，有如下打印，说明llama-server服务启动成功
 
@@ -245,17 +245,17 @@ llama-server -m qwen3vl-30b-text-q4_1.gguf --media-backend smt --smt-config-dir 
 
 参数说明：
 - -m: 指定.gguf格式模型文件的路径
-- --media-backend: 
-- --smt-config-dir: 
-- -ctk: 
-- -ctv:
+- --media-backend: 指定vision后端，默认为smt
+- --smt-config-dir: 指定vision配置路径
+- -ctk: K cache的量化格式
+- -ctv: V cache的量化格式
 - -t: 指定运行测试时使用的线程数量（K3:<=8,K1:<=4）
-- -tb: 
-- -c: 
+- -tb: 批处理（Batch Processing）‌‌时使用的 CPU 线程数
+- -c: 上下文长度
 - --host: 指定服务器监听的 IP 地址
 - --port: 设置服务器监听的端口号，默认为 8080
-- --reasoning-budget: 
-- --reasoning: 
+- --reasoning-budget: 控制大模型‌思维链（reasoning）行为‌的参数
+- --reasoning: 开关思考
 
 打开浏览器，输入网址：127.0.0.1：8080，开始对话，如下：
 
@@ -272,7 +272,7 @@ llama-server的终端会打印出性能指标，如下：
 #### 下载
 
 - 从[这里](https://archive.spacemit.com/spacemit-ai/llama.cpp/)下载进迭官方发布的llama.cpp，并通过scp等方式拷贝到设备上
-- 通过wget命令下载（后面以0.0.5版本为例）
+- 通过wget命令下载（**后面以0.0.5版本为例，但请下载最新版本**）
 ```bash
 wget http://archive.spacemit.com/spacemit-ai/llama.cpp/spacemit-llama.cpp.riscv64.0.0.5.tar.gz
 ```
