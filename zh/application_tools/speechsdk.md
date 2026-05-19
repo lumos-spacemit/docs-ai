@@ -56,7 +56,7 @@ sidebar_position: 3
 | Translation | `hy-mt-1.5` | `hy-mt-1.5` / `marian` | 4 / 1 | A100 / X100 | 支持 / 未支持 |
 | TTS | `matcha` | `matcha` / `vits` | 2 | X100 | 支持 / 未支持 |
 | KWS | `wenetspeech` | `wenetspeech` | 1 | X100 | 未支持 |
-| Diarization | `3dspeaker` | `3dspeaker` | 1 | X100 | 支持 |
+| Diarization | `eres2net` | `eres2net` | 1 | X100 | 支持 |
 
 ## 🚀 快速开始
 
@@ -90,11 +90,14 @@ sidebar_position: 3
     ```bash
     sudo apt update
     sudo apt install -y build-essential cmake git libcurl4-openssl-dev
+
     git clone https://github.com/ggml-org/llama.cpp.git
     cd llama.cpp
+
     cmake -B build -S . -DGGML_CURL=ON -DCMAKE_INSTALL_PREFIX=$HOME/.local
     cmake --build build -j$(nproc)
     cmake --install build
+
     export PATH="$HOME/.local/bin:$PATH"
     ```
 
@@ -111,13 +114,15 @@ sidebar_position: 3
 源码方式当前面向以下环境：
 
 - **Bianbu / RISC-V 环境**
-- **x86-64 Ubuntu 环境**
+- **Ubuntu / X86-64 环境**
 
 1. **创建虚拟环境**
 
     ```bash
     cd path/to/sm-sdk
     curl -LsSf https://astral.sh/uv/install.sh | sh
+    source ~/.bashrc
+
     uv venv --python 3.13
     source .venv/bin/activate
     ```
@@ -136,7 +141,7 @@ sidebar_position: 3
     export UV_EXTRA_INDEX_URL=https://git.spacemit.com/api/v4/projects/33/packages/pypi/simple
     export UV_INDEX_URL=https://mirrors.aliyun.com/pypi/simple
     uv pip install .
-    UV_EXTRA_INDEX_URL= uv pip install sherpa-onnx --index-url https://git.spacemit.com/api/v4/projects/81/packages/pypi/simple --no-cache-dir
+    UV_EXTRA_INDEX_URL= uv pip install sherpa-onnx==1.13.1 --index-url https://git.spacemit.com/api/v4/projects/81/packages/pypi/simple --no-cache-dir
     ```
 
 3. **准备模型**
@@ -148,7 +153,7 @@ sidebar_position: 3
 
     ```bash
     cd path/to/sm-sdk
-    wget http://159.27.188.198/spacemit-ai/yumeet/yumeet_models.tar.gz
+    wget https://archive.spacemit.com/spacemit-ai/yumeet/yumeet_models.tar.gz
     tar -xf yumeet_models.tar.gz
     ```
 
@@ -179,6 +184,7 @@ sidebar_position: 3
     sudo systemctl start sm-sdk.service
     sudo systemctl stop sm-sdk.service
     sudo systemctl restart sm-sdk.service
+    sudo systemctl status sm-sdk.service
     ```
 
 3. **查看日志**
@@ -233,9 +239,7 @@ $SM_SDK_MODEL_DIR
 - `keywords.txt`：关键词检测的关键词清单。
 - `kws.yaml`：关键词检测模型与阈值、重复检测间隔等参数。
 - `pipeline.yaml`：流水线级开关，例如是否启用翻译、TTS、标点恢复、KWS、说话人分离。
-- `pseudo_stream.yaml`：离线 ASR 伪流式输出策略，例如推理周期、缓冲时长与稳定化参数。
 - `server.yaml`：FastAPI 服务监听地址、端口、worker 数量等参数。
-- `sli.yaml`：语种识别（SLI）能力的模型配置；该能力当前不在主服务 WebSocket/HTTP 流水线中默认装配。
 - `terms.json`：术语纠正规则，用于纠正 ASR 结果中的专有名词或常见误识别。
 - `translation.yaml`：翻译模型配置，包括 `llama-server` 路径、端口、上下文长度、线程数等。
 - `tts.yaml`：语音合成模型配置，包括语言、线程数、provider 等。
@@ -350,11 +354,32 @@ http://localhost:8060/docs
 
 | 方法 | 路径 | 请求类型 | 说明 |
 | --- | --- | --- | --- |
+| `POST` | `/v1/components/load` | `application/json` | 初始化当前配置启用的语音组件 |
+| `POST` | `/v1/components/release` | `application/json` | 释放当前已加载的语音组件 |
 | `POST` | `/v1/audio/transcriptions` | `multipart/form-data` | 上传音频文件并返回转写结果 |
+| `POST` | `/v1/audio/translate` | `application/json` | 输入文本并返回翻译结果 |
 | `POST` | `/v1/audio/speech` | `application/json` | 输入文本并返回语音音频 |
 | `POST` | `/v1/audio/pipeline` | `multipart/form-data` | 一次性执行 ASR → Diarization → Translation → TTS（按配置启用） |
 
-#### 1. 文件转写
+#### 1. 加载语音组件
+
+```bash
+curl -X POST http://localhost:8060/v1/components/load
+```
+
+- 当全局单例会话空闲且服务状态为 ready 时，按当前配置初始化语音组件。
+- 若组件已初始化，接口会直接返回成功状态。
+
+#### 2. 释放语音组件
+
+```bash
+curl -X POST http://localhost:8060/v1/components/release
+```
+
+- 当全局单例会话空闲时，释放当前已加载的语音组件。
+- 若组件已处于释放状态，接口会返回成功并提示无需重复释放。
+
+#### 3. 文件转写
 
 ```bash
 curl -X POST http://localhost:8060/v1/audio/transcriptions \
@@ -366,7 +391,20 @@ curl -X POST http://localhost:8060/v1/audio/transcriptions \
 - `response_format=json`：返回 JSON，包含 `text` 与 `segments`。
 - `response_format=text`：仅返回纯文本转写结果。
 
-#### 2. 文本转语音
+#### 4. 文本翻译
+
+```bash
+curl -X POST http://localhost:8060/v1/audio/translate \
+    -H "Content-Type: application/json" \
+    -d '{
+        "text": "你好，欢迎使用 Speech SDK。"
+    }'
+```
+
+- 请求体中的 `text` 为必填字段。
+- 返回 JSON，包含原始文本 `text` 与翻译结果 `translated_text`。
+
+#### 5. 文本转语音
 
 ```bash
 curl -X POST http://localhost:8060/v1/audio/speech \
@@ -383,7 +421,7 @@ curl -X POST http://localhost:8060/v1/audio/speech \
 - `response_format` 当前支持 `wav` 和 `mp3`。
 - `speed` 取值范围由接口限制为 `0.25 ~ 4.0`。
 
-#### 3. 音频完整流水线
+#### 6. 音频完整流水线
 
 ```bash
 curl -X POST http://localhost:8060/v1/audio/pipeline \
