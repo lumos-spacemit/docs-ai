@@ -151,6 +151,120 @@ curl -X POST http://127.0.0.1:8080/v1/chat/completions \
 
 ![](../images/llama-server-chrome.png)
 
+### 多模态模型下载使用方法
+
+因多模态模型的使用与标准的大语言模型有一些差异，这里单独进行说明。
+
+#### 模型下载
+
+多模态模型需要进迭这边进行拆分才能够在llama.cpp中运行，拆分后的模型下载位置在：https://archive.spacemit.com/spacemit-ai/model_zoo/vlm/，目前比较受欢迎的几个模型为：
+
+- Qwen3.5-0.8B
+- Qwen3.5-2B
+- Qwen3.5-4B
+- fastvlm-0.5B
+- Qwen3-VL-30B-A3B
+
+下面以上面几个模型为例，介绍使用方法。
+
+#### 模型准备
+
+下载上面的模型并传递到K3设备中，并准备若干测试图片，图片准备224x224、384x384、512x512、768x768几种分辨率，.png和.jpg格式都可以，如下：
+
+![](../images/vlm-folder-structure.png)
+
+解压模型，以Qwen3.5-0.8B为例，解压后，内容如下：
+
+![](../images/qwen35-0.8b-folder-structure.png)
+
+目录结构说明如下：
+- config.json:模型配置文件，下面细说
+- qwen3_5vl_0.8b-text-q41.gguf:VLM模型分离出来的大语言模型
+- qwen3_5vl_0.8b-vision-224-op23.fp16.onnx:VLM模型分离出来的vision模型，输入224x224
+- qwen3_5vl_0.8b-vision-384-op23.fp16.onnx:VLM模型分离出来的vision模型，输入384x384
+- qwen3_5vl_0.8b-vision-768-op23.fp16.onnx:VLM模型分离出来的vision模型，输入768x768
+
+config.json配置文件说明：
+
+```bash
+{
+  "architectures": [
+    "Qwen3_5ForConditionalGeneration"
+  ],
+  "vision_model": {
+    "model_path": "./qwen3_5vl_0.8b-vision-384-op23.f16.onnx", //指定vision模型路径
+    "input_size": 384,                                         //指定模型输入size，与上面的模型对应
+    "spacemit_ep_intra_thread_num": 4,
+    "spacemit_ep_inter_thread_num": 1
+  },
+  "text_model": {
+    "model_path": "./qwen3_5vl_0.8b-text-q41.gguf",            //指定大语言模型路径
+    "hidden_size": 1024
+  }
+}
+```
+
+#### 模型使用（非Qwen3-vl-30B-A3B）
+
+在Qwen3.5-0.8B目录下通过llama-server命令起service，命令如下：
+
+```bash
+llama-server -m qwen3_5vl_0.8b-text-q41.gguf --media-backend smt --smt-config-dir ./ -t 8 --host 0.0.0.0 --port 8080 --reasoning-budget 0 --reasoning off
+```
+参数说明：
+- -m: 指定.gguf格式模型文件的路径
+- --media-backend: 
+- --smt-config-dir: 
+- -t: 指定运行测试时使用的线程数量（K3:<=8,K1:<=4）
+- --host: 指定服务器监听的 IP 地址
+- --port: 设置服务器监听的端口号，默认为 8080
+- --reasoning-budget: 
+- --reasoning: 
+
+这个过程中，有一个加载模型的步骤，比较耗时，模型越大越耗时，有如下打印，说明llama-server服务启动成功
+
+![](../images/vlm-ready.png)
+
+打开浏览器，输入网址：127.0.0.1：8080，开始对话，如下：
+
+![](../images/vlm-chrome.png)
+
+llama-server的终端会打印出性能指标，如下：
+
+![](../images/vlm-performance.png)
+
+#### 模型使用（Qwen3-VL-30B-A3B）
+
+通过设置 export SPACEMIT_EP_DENSE_ACCURACY_LEVEL=1 加速onnx模型的推理速度
+
+在qwen30ba3b-mm-q4_1目录下通过llama-server起service，命令如下：
+
+```bash
+llama-server -m qwen3vl-30b-text-q4_1.gguf --media-backend smt --smt-config-dir ./ -ctk f16 -ctv f16 -t 8 -tb 8 -c 1024 --host 0.0.0.0 --port 8080 --reasoning-budget 0 --reasoning off
+```
+
+参数说明：
+- -m: 指定.gguf格式模型文件的路径
+- --media-backend: 
+- --smt-config-dir: 
+- -ctk: 
+- -ctv:
+- -t: 指定运行测试时使用的线程数量（K3:<=8,K1:<=4）
+- -tb: 
+- -c: 
+- --host: 指定服务器监听的 IP 地址
+- --port: 设置服务器监听的端口号，默认为 8080
+- --reasoning-budget: 
+- --reasoning: 
+
+打开浏览器，输入网址：127.0.0.1：8080，开始对话，如下：
+
+![](../images/vlm-30b-a3b-chrome.png)
+
+llama-server的终端会打印出性能指标，如下：
+
+![](../images/vlm-30b-a3b-performance.png)
+
 ## Buildroot环境使用说明
 
 ### 安装
@@ -272,7 +386,7 @@ make install
 popd
 ```
 
-## SMT 多模态扩展
+## 多模态扩展构建
 
 如果需要在 `llama-server` 或 `llama-mtmd-cli` 中启用 SpacemiT SMT 多模态扩展，需要额外准备一个 `SPACEMIT_ORT_DIR` 目录，其中至少包含：
 
@@ -310,7 +424,7 @@ export LD_LIBRARY_PATH=/path/to/spacemit-ort/lib:./build/installed/lib:${LD_LIBR
 
 ./build/bin/llama-server \
   -m /path/to/model.gguf \
-  --vision-backend smt \
+  --media-backend smt \
   --smt-config-dir /path/to/smt-config-dir \
   -t 8 -c 16384 --no-mmap -ub 128 --warmup
 ```
