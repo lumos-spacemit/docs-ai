@@ -348,12 +348,28 @@ provider_options["SPACEMIT_EP_INTRA_THREAD_AFFINITY"] = "8,9,10,11";
 可用的组合很多，举例如下：2+2+4，2+2+2+2，1+1+1+1+1+1+1+1 ...
 
 
-## 4. 本地构建
+## 4. K3本机构建
+
+### 4.1. 安装依赖
+
+```bash
+sudo apt install cmake
+```
+
+### 4.2. 代码下载
+
+```bash
+git clone https://github.com/spacemit-com/llama.cpp.git
+```
+
+### 4.3. 编译安装
+
+#### 4.3.1. 基础版本
 
 SpacemiT RISC-V 平台构建时，建议开启 `GGML_CPU_RISCV64_SPACEMIT` 选项以启用相关优化。
 
 ```bash
-export RISCV_ROOT_PATH=/path/to/spacemit-toolchain-linux-glibc-x86_64-v1.1.2
+cd llama.cpp
 
 cmake -B build \
     -DCMAKE_BUILD_TYPE=Release \
@@ -371,24 +387,21 @@ cmake -B build \
 
 cmake --build build --parallel $(nproc) --config Release
 
-pushd build
+cd build
 make install
-popd
 ```
 
-## 5. 多模态扩展构建
+#### 4.3.2. 多模态扩展版本
 
-如果需要在 `llama-server` 或 `llama-mtmd-cli` 中启用 SpacemiT SMT 多模态扩展，需要额外准备一个 `SPACEMIT_ORT_DIR` 目录，其中至少包含：
-
-- `include/`
-- `lib/`
-- `samples/`
+如果需要在 `llama-server` 或 `llama-mtmd-cli` 中启用 SpacemiT SMT 多模态扩展，编译需要依赖onnxruntime，额外准备一个 `SPACEMIT_ORT_DIR` 目录，目录中是已经构建好的onnxruntime，编译好的onnxruntime可以从([https://archive.spacemit.com/spacemit-ai/onnxruntime/](https://archive.spacemit.com/spacemit-ai/onnxruntime/))获取最新版本并解压。
 
 构建时增加以下定义：
 
 ```bash
 export SPACEMIT_ORT_DIR=/path/to/spacemit-ort
 export LD_LIBRARY_PATH=${SPACEMIT_ORT_DIR}/lib:${LD_LIBRARY_PATH}
+
+cd llama.cpp
 
 cmake -B build \
     -DCMAKE_BUILD_TYPE=Release \
@@ -405,21 +418,12 @@ cmake -B build \
     -DCMAKE_INSTALL_PREFIX=build/installed \
     -DLLAMA_SERVER_SMT_VISION=ON \
     -DSPACEMIT_ORT_DIR=${SPACEMIT_ORT_DIR}
+
+cmake --build build --parallel $(nproc) --config Release
+
+cd build
+make install
 ```
-
-运行 `llama-server` 时需要额外传入 SMT 配置目录：
-
-```bash
-export LD_LIBRARY_PATH=/path/to/spacemit-ort/lib:./build/installed/lib:${LD_LIBRARY_PATH}
-
-./build/bin/llama-server \
-  -m /path/to/model.gguf \
-  --media-backend smt \
-  --smt-config-dir /path/to/smt-config-dir \
-  -t 8 -c 16384 --no-mmap -ub 128 --warmup
-```
-
-`--smt-config-dir` 目录下通常需要包含 `config.json` 以及对应的视觉 ONNX 模型文件。
 
 ## 6. [模型性能数据](./modelzoo.md)
 > 通过llama-bench测试获得
