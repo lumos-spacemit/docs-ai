@@ -9,28 +9,6 @@
  * @FilePath: \doc\docs-ai\zh\solutions\aicomputer_solution\index.md
  * @Description: 
 -->
-<!--
- * Copyright 2022-2023 SPACEMIT. All rights reserved.
- * Use of this source code is governed by a BSD-style license
- * that can be found in the LICENSE file.
- * 
- * @Author: David(qiang.fu@spacemit.com)
- * @Date: 2026-03-10 09:43:19
- * @LastEditTime: 2026-03-17 16:18:25
- * @FilePath: \doc\docs-bianbu\zh\ai\index.md
- * @Description: 
--->
-<!--
- * Copyright 2022-2023 SPACEMIT. All rights reserved.
- * Use of this source code is governed by a BSD-style license
- * that can be found in the LICENSE file.
- * 
- * @Author: David(qiang.fu@spacemit.com)
- * @Date: 2026-03-09 17:28:38
- * @LastEditTime: 2026-03-10 10:13:35
- * @FilePath: \doc\docs-bianbu\zh\ai\index.md
- * @Description: 
--->
 ---
 slug: /ai
 sidebar_position: 2
@@ -52,19 +30,19 @@ sidebar_position: 2
 
 ## 见智(Seewise)
 
-待补充
+**Seewise** 是一款智能视频搜索引擎，支持上传本地视频或连接 RTSP 摄像头，自动分析视频内容，让你用自然语言快速找到想要的视频片段。
 
 - [见智(Seewise)](seewise.md)
 
 ## 点将(Agentforce)
 
-待补充
+**AgentForce（点将）** 是一个基于 Hermes Agent 和 OpenClaw 的 AI 数字员工管理平台，提供可视化的 Web 界面，让用户轻松创建、管理和与多个 AI 数字员工进行对话。每个数字员工拥有独立的性格、记忆和技能，可以自主学习并执行任务。
 
 - [点将(Agentforce)](agentforce.md)
 
 ## SpacemiT AI Lab
 
-待补充
+**SpacemiT AI Lab** 是一个基于 Web 的 AI 评估平台。用户通过网页申请云 K3 实例，无需任何硬件准备，即可在线体验 SpacemiT K3 AI CPU 上的模型推理效果与真实性能数据，实现 **<big>零配置、即开即用</big>** 的评估体验。
 
 - [SpacemiT AI Lab](ailab.md)
 
