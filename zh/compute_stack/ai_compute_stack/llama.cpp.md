@@ -70,20 +70,20 @@ wget https://www.modelscope.cn/models/unsloth/Qwen3-30B-A3B-Instruct-2507-GGUF/r
 ### 使用
 
 有3种常见的使用方法
-- llama-bench
+- llama-bench **(主要用于性能测试)**
 - llama-cli
 - llama-server
 
 下面以K3平台为例，分别介绍
 
-#### llama-bench
+#### llama-bench（主要用于性能测试）
 
 
 ```bash
 llama-bench -m Qwen3-30B-A3B-Instruct-2507-Q4_0.gguf -t 8 -p 64 -n 64 -mmp 0 -fa 1
 ```
 参数说明：
-- -t: 指定运行测试时使用的线程数量（K3:<=8,K1:<=4）
+- **-t: 指定运行测试时使用的线程数量（K3:<=8,K1:<=4，如果需要并行跑多个推理，所有推理的线程总和不能大于上述值）**
 - -p: 指定‌提示词（Prompt）的长度‌，单位为 token
 - -n: 指定输出生成长度
 - -mmp: 是否启用 Multi-Modal Prompt 支持
@@ -101,7 +101,7 @@ llama-cli -m Qwen3-30B-A3B-Instruct-2507-Q4_0.gguf -t 8 --no-mmap -c 15360
 
 参数说明：
 - -m: 指定.gguf格式模型文件的路径
-- -t: 指定运行测试时使用的线程数量（K3:<=8,K1:<=4）
+- **-t: 指定运行测试时使用的线程数量（K3:<=8,K1:<=4，如果需要并行跑多个推理，所有推理的线程总和不能大于上述值）**
 - --no-mmap: 禁用内存映射（memory mapping）功能
 - -c: 设置‌上下文长度（context size）
 
@@ -118,7 +118,7 @@ llama-server -m Qwen3-30B-A3B-Instruct-2507-Q4_0.gguf -t 8 --host 127.0.0.1 --po
 
 参数说明：
 - -m: 指定.gguf格式模型文件的路径
-- -t: 指定运行测试时使用的线程数量（K3:<=8,K1:<=4）
+- **-t: 指定运行测试时使用的线程数量（K3:<=8,K1:<=4，如果需要并行跑多个推理，所有推理的线程总和不能大于上述值）**
 - --host: 指定服务器监听的 IP 地址
 - --port: 设置服务器监听的端口号，默认为 8080
 - --ctx-size: 控制模型上下文长度（以 token 为单位），影响模型处理长文本的能力
@@ -215,7 +215,7 @@ llama-server -m qwen3_5vl_0.8b-text-q41.gguf --media-backend smt --smt-config-di
 - -m: 指定.gguf格式模型文件的路径
 - --media-backend: 指定vision后端，默认为smt
 - --smt-config-dir: 指定vision配置路径
-- -t: 指定运行测试时使用的线程数量（K3:<=8,K1:<=4）
+- **-t: 指定运行测试时使用的线程数量（K3:<=8,K1:<=4，如果需要并行跑多个推理，所有推理的线程总和不能大于上述值）**
 - --host: 指定服务器监听的 IP 地址
 - --port: 设置服务器监听的端口号，默认为 8080
 - --reasoning-budget: 控制大模型‌思维链（reasoning）行为‌的参数
@@ -249,7 +249,7 @@ llama-server -m qwen3vl-30b-text-q4_1.gguf --media-backend smt --smt-config-dir 
 - --smt-config-dir: 指定vision配置路径
 - -ctk: K cache的量化格式
 - -ctv: V cache的量化格式
-- -t: 指定运行测试时使用的线程数量（K3:<=8,K1:<=4）
+- **-t: 指定运行测试时使用的线程数量（K3:<=8,K1:<=4，如果需要并行跑多个推理，所有推理的线程总和不能大于上述值）**
 - -tb: 批处理（Batch Processing）‌‌时使用的 CPU 线程数
 - -c: 上下文长度
 - --host: 指定服务器监听的 IP 地址
@@ -307,13 +307,13 @@ wget https://www.modelscope.cn/models/unsloth/Qwen3-30B-A3B-Instruct-2507-GGUF/r
 ### 使用
 
 有3种常见的使用方法
-- llama-bench
+- llama-bench **(主要用于性能测试)**
 - llama-cli
 - llama-server
 
 下面以K3平台为例，分别介绍
 
-#### llama-bench
+#### llama-bench（主要用于性能测试）
 
 
 ```bash
