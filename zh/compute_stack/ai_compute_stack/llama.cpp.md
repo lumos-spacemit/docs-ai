@@ -338,6 +338,27 @@ provider_options["SPACEMIT_EP_INTRA_THREAD_NUM"] = "4";
 provider_options["SPACEMIT_EP_INTRA_THREAD_AFFINITY"] = "8,9,10,11";
 ```
 
+#### 3.3.3. llama + llama多模态扩展
+
+除了进行llama+llama中的绑核操作外，config.json文件中也要对onnxruntime进行绑核，如下：
+
+```bash
+#方式1 与之前的使用方式相同，例如在vision_model字段中添加
+  "vision_model": {
+    "model_path": "./xxx.onnx",
+    "spacemit_ep_intra_thread_num": 4,
+    "spacemit_ep_inter_thread_num": 1,
+    "spacemit_ep_intra_thread_affinity": "8;9;10;11"
+  }
+
+#方式2(推荐) 添加ep_config字段，设置方式与ep完全一致：
+ "ep_config": {
+    "SPACEMIT_EP_INTRA_THREAD_NUM": "4",
+    "SPACEMIT_EP_INTER_THREAD_NUM": "1",
+    "SPACEMIT_EP_INTRA_THREAD_AFFINITY": "8;9;10;11"
+  }
+```
+
 ### 3.4. 多路推理
 
 多路推理与双路推理类似，需要满足：
