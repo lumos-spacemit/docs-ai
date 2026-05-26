@@ -184,9 +184,9 @@ sidebar_position: 9
 ## 大模型
 
 - K3
->- llama.cpp版本：0.0.7+a3
+>- llama.cpp版本：0.1.1
 >- OS：bianbu-4.0rc1
->- date：2026-4-16
+>- date：2026-5-26
 >- 6400DDR，A100@1.8GHz
 >- bash: llama-bench -m model.gguf -t 8 -p 128 -n 128 -mmp 0 -fa 1 -ub 128
 
@@ -196,14 +196,12 @@ sidebar_position: 9
 
 | 模型名 | 量化类型 | PP128 (token/s) | TG128 (token/s) | PP1280 (token/s) | TG1280 (token/s) |
 | --- | --- | --- | --- | --- | --- |
-| qwen3-0.6B | Q4_0 | 478.45 | 49.36 | - | - |
-| qwen3-1.7B | Q4_0 | 202.50 | 22.97 | - | - |
-| qwen3-4B | Q4_0 | 80.05 | 9.57 | - | - |
-| qwen3-moe-30B-A3B | Q4_0 | 57.41 | 11.89 | 44.3 | 10.7
-| qwen3.5-0.8B | Q4_0 | 59.64 | 24.30 | - | - |
-| qwen3.5-2B | Q4_1 | 46.30 | 13.75 | - | - |
-| HY-MT1.5-1.8B | Q4_K_M | 169.17 | 15.36 | - | - |
-| llama2-7B | Q4_0 | 49.45 | 6.90 | - | - |
+| qwen3-0.6B | Q4_0 | 499.75 | 53.35 | - | - |
+| qwen3-1.7B | Q4_0 | 229.79 | 23.11 | - | - |
+| qwen3-4B | Q4_0 | 76.44 | 11.03 | - | - |
+| qwen3-moe-30B-A3B | Q4_0 | 55.54 | 13.33 | 43.86 | 11.93
+| qwen3.5-0.8B | Q4_0 | 182.69 | 29.33 | - | - |
+| qwen3.5-2B | Q4_1 | 112.22 | 16.15 | - | - |
 
 ### HunYuan
 
@@ -211,7 +209,7 @@ sidebar_position: 9
 
 | 模型名 | 量化类型 | PP128 (token/s) | TG128 (token/s) | PP1280 (token/s) | TG1280 (token/s) |
 | --- | --- | --- | --- | --- | --- |
-| HY-MT1.5-1.8B | Q4_K_M | 169.17 | 15.36 | - | - |
+| HY-MT1.5-1.8B | Q4_K_M | 157.81 | 20.15 | - | - |
 
 ### Llama
 
@@ -219,4 +217,17 @@ sidebar_position: 9
 
 | 模型名 | 量化类型 | PP128 (token/s) | TG128 (token/s) | PP1280 (token/s) | TG1280 (token/s) |
 | --- | --- | --- | --- | --- | --- |
-| llama2-7B | Q4_0 | 49.45 | 6.90 | - | - |
+| llama2-7B | Q4_0 | 50.40 | 7.07 | - | - |
+
+### Download
+
+| 模型名 | 下载地址 |
+| --- | --- |
+| qwen3-0.6B | https://www.modelscope.cn/models/aliworkq/Qwen3-0.6B-Q4_0.GGUF/files |
+| qwen3-1.7B | https://huggingface.co/miku552/Qwen3-1.7B-Q4_0-GGUF/tree/main |
+| qwen3-4B | https://huggingface.co/miku552/Qwen3-4B-Q4_0-GGUF/tree/main |
+| qwen3-moe-30B-A3B | https://huggingface.co/fernandoruiz/Qwen3-30B-A3B-Q4_0-GGUF/tree/main |
+| qwen3.5-0.8B | https://www.modelscope.cn/models/cola9936/Qwen3.5-0.8B-Q4_0/files |
+| qwen3.5-2B | https://www.modelscope.cn/models/Manojb/Qwen3.5-2B-Q4_1.gguf/files |
+| HY-MT1.5-1.8B | https://www.modelscope.cn/models/Tencent-Hunyuan/HY-MT1.5-1.8B-GGUF/files |
+| llama2-7B | https://www.modelscope.cn/models/TheBloke/Llama-2-7B-GGUF/files |
