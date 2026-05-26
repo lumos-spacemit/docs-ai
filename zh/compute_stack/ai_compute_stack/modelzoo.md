@@ -7,6 +7,7 @@ sidebar_position: 9
 
 - [ModelZoo](#modelzoo)
   - [基础模型](#基础模型)
+    - [测试方式](#测试方式)
     - [resnet](#resnet)
     - [mobilenet](#mobilenet)
     - [efficientnet](#efficientnet)
@@ -14,6 +15,8 @@ sidebar_position: 9
     - [yolov5](#yolov5)
     - [yolov6](#yolov6)
     - [yolov8](#yolov8)
+    - [yolov8-seg](#yolov8-seg)
+    - [yolov8-pose](#yolov8-pose)
     - [yolov12](#yolov12)
   - [大模型](#大模型)
     - [Qwen](#qwen)
@@ -31,6 +34,41 @@ sidebar_position: 9
 >- OS：bianbu-4.0rc3
 >- date：2026-5-22
 >- 6400DDR，A100@1.8GHz
+
+### 测试方式
+~~~
+# 进入spacemit-ort库路径
+# cd {spacemit_ort_lib}/
+export LD_LIBRARY_PATH=./lib/
+
+./bin/onnxruntime_perf_test ${model_path} -e spacemit -r 10 -x 1 -S 1 -s -c 1 -i "SPACEMIT_EP_INTRA_THREAD_NUM|${num of cores}" -I
+
+# 输出信息如下
+using SpaceMITExecutionProvider
+setting SPACEMIT_EP_INTRA_THREAD_NUM : 4
+Setting intra_op_num_threads to 1
+Session creation time cost: 0.169475 s
+First inference time cost: 109 ms
+Total inference time cost: 0.0727021 s
+Total inference requests: 10
+Average inference time cost total: 7.270205 ms
+Total inference run time: 0.0727619 s
+Number of inferences per second: 137.435
+Avg CPU usage: 62 %
+Peak working set size: 91336704 bytes
+Avg CPU usage:62
+Peak working set size:91336704
+Runs:10
+Min Latency: 0.00720383 s
+Max Latency: 0.00730163 s
+P50 Latency: 0.00727787 s
+P90 Latency: 0.00730163 s
+P95 Latency: 0.00730163 s
+P99 Latency: 0.00730163 s
+P999 Latency: 0.00730163 s
+
+# Average inference time cost total即单帧推理耗时
+~~~
 
 ### resnet
 
@@ -146,7 +184,6 @@ sidebar_position: 9
 | yolov6s | int8 | 640x640 | 66.36 | 36.61 | 21.56 | 13.60 |
 
 ### yolov8
-
 - K1
 
 | 模型名 | type | shape | 1 Core/ms | 2 Core/ms | 4 Core/ms |
@@ -159,8 +196,8 @@ sidebar_position: 9
 
 | 模型名 | type | shape | 1 Core/ms | 2 Core/ms | 4 Core/ms | 8 Core/ms |
 | --- | --- | --- | --- | --- | --- | --- |
-| yolov8n | int8 | 640x640 | 43.05 | 23.91 | 14.23 | 9.82 |
-| yolov8s | int8 | 640x640 | 76.96 | 42.41 | 25.52 | 17.14 |
+| [yolov8n](https://archive.spacemit.com/spacemit-ai/model_zoo/vision/yolov8/yolov8n.q.onnx) | int8 | 640x640 | 43.05 | 23.91 | 14.23 | 9.82 |
+| [yolov8s](https://archive.spacemit.com/spacemit-ai/model_zoo/vision/yolov8/yolov8s.q.onnx) | int8 | 640x640 | 76.96 | 42.41 | 25.52 | 17.14 |
 | yolov8m | int8 | 640x640 | 163.62 | 88.08 | 49.67 | 32.66 |
 
 ### yolov8-seg
