@@ -19,6 +19,7 @@ sidebar_position: 9
     - [yolov8-pose](#yolov8-pose)
     - [yolov12](#yolov12)
   - [大模型](#大模型)
+    - [测试方式](#测试方式-1)
     - [Qwen](#qwen)
     - [HunYuan](#hunyuan)
     - [Llama](#llama)
@@ -30,10 +31,9 @@ sidebar_position: 9
 >- date：2026-2-9
 
 - K3
->- 推理引擎版本: spacemit-ort-2.0.3
+>- 推理引擎版本: [v2.0.3](https://github.com/spacemit-com/onnxruntime/releases/download/2.0.3/spacemit-ort.riscv64.2.0.3.tar.gz)
 >- OS：bianbu-4.0rc3
->- date：2026-5-22
->- 6400DDR，A100@1.8GHz
+>- date：2026-5-26
 
 ### 测试方式
 ~~~
@@ -41,6 +41,7 @@ sidebar_position: 9
 # cd {spacemit_ort_lib}/
 export LD_LIBRARY_PATH=./lib/
 
+# 调整为自己的${model_path}(模型文件路径)，${num of cores}(选择跑几个核心)
 ./bin/onnxruntime_perf_test ${model_path} -e spacemit -r 10 -x 1 -S 1 -s -c 1 -i "SPACEMIT_EP_INTRA_THREAD_NUM|${num of cores}" -I
 
 # 输出信息如下
@@ -241,11 +242,29 @@ P999 Latency: 0.00730163 s
 ## 大模型
 
 - K3
->- llama.cpp版本：0.0.7+a3
->- OS：bianbu-4.0rc1
->- date：2026-4-16
->- 6400DDR，A100@1.8GHz
->- bash: llama-bench -m model.gguf -t 8 -p 128 -n 128 -mmp 0 -fa 1 -ub 128
+>- llama.cpp版本：[0.1.1](https://github.com/spacemit-com/llama.cpp/releases/download/spacemit-llama.cpp.riscv64.0.1.1/spacemit-llama.cpp.riscv64.0.1.1.tar.gz)
+>- OS：bianbu-4.0rc3
+>- date：2026-5-26
+
+### 测试方式
+~~~
+# 进入spacemit-llama.cpp库路径
+# cd {spacemit-llama.cpp}/
+export LD_LIBRARY_PATH=./lib/
+
+# 调整为自己的${model_path}(模型文件路径)，${num of cores}(选择跑几个核心)
+./bin/llama-bench -m ${model_path} -t ${num of cores} -p 128 -n 128 -mmp 0 -fa 1 -ub 128
+
+# 输出信息如下
+CPU_RISCV64_SPACEMIT: tcm is available, blk_size: 393216, blk_num: 8, is_fake_tcm: 0
+CPU_RISCV64_SPACEMIT: num_cores: 16, num_perfer_cores: 8, perfer_core_arch_id: a064, exclude_main_thread: 0, use_ime1: 0, use_ime2: 1, mem_backend: HPAGE, cpu_mask: ff00, aicpu_id_offset: 8
+CPU_RISCV64_SPACEMIT: alloc_chunk: open(/dev/tcm_sync_mem) failed, errno=2
+CPU_RISCV64_SPACEMIT: failed to allocate init_barrier from shared mem, falling back to heap
+| model                          |       size |     params | backend    | threads | n_ubatch | fa | mmap |            test |                  t/s |
+| ------------------------------ | ---------: | ---------: | ---------- | ------: | -------: | -: | ---: | --------------: | -------------------: |
+| qwen3 0.6B Q4_0                | 358.78 MiB |   596.05 M | CPU        |       8 |      128 |  1 |    0 |           pp128 |        486.08 ± 0.43 |
+| qwen3 0.6B Q4_0                | 358.78 MiB |   596.05 M | CPU        |       8 |      128 |  1 |    0 |           tg128 |         47.72 ± 0.01 |
+~~~
 
 ### Qwen
 
@@ -253,8 +272,8 @@ P999 Latency: 0.00730163 s
 
 | 模型名 | 量化类型 | PP128 (token/s) | TG128 (token/s) | PP1280 (token/s) | TG1280 (token/s) |
 | --- | --- | --- | --- | --- | --- |
-| qwen3-0.6B | Q4_0 | 478.45 | 49.36 | - | - |
-| qwen3-1.7B | Q4_0 | 202.50 | 22.97 | - | - |
+| [qwen3-0.6B](https://www.modelscope.cn/models/unsloth/Qwen3-0.6B-GGUF/file/view/master/Qwen3-0.6B-Q4_0.gguf?status=2) | Q4_0 | 486.08 | 47.72 | - | - |
+| [qwen3-1.7B](https://www.modelscope.cn/models/unsloth/Qwen3-1.7B-GGUF/file/view/master/Qwen3-1.7B-Q4_0.gguf?status=2) | Q4_0 | 223.11 | 20.52 | - | - |
 | qwen3-4B | Q4_0 | 80.05 | 9.57 | - | - |
 | qwen3-moe-30B-A3B | Q4_0 | 57.41 | 11.89 | 44.30 | 10.70
 | qwen3.5-0.8B | Q4_0 | 59.64 | 24.30 | - | - |
