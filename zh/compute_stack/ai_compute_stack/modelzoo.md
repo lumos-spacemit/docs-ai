@@ -294,3 +294,43 @@ CPU_RISCV64_SPACEMIT: failed to allocate init_barrier from shared mem, falling b
 | 模型名 | 量化类型 | PP128 (token/s) | TG128 (token/s) | PP1280 (token/s) | TG1280 (token/s) |
 | --- | --- | --- | --- | --- | --- |
 | [llama2-7B](https://www.modelscope.cn/models/TheBloke/Llama-2-7B-GGUF/files) | Q4_0 | 50.40 | 7.07 | - | - |
+
+## 多模态大模型
+
+- K3
+>- llama.cpp版本：[0.1.1](https://github.com/spacemit-com/llama.cpp/releases/download/spacemit-llama.cpp.riscv64.0.1.1/spacemit-llama.cpp.riscv64.0.1.1.tar.gz)
+>- 推理引擎版本: [v2.0.3](https://github.com/spacemit-com/onnxruntime/releases/download/2.0.3/spacemit-ort.riscv64.2.0.3.tar.gz)
+>- OS：bianbu-4.0rc3
+>- date：2026-5-26
+
+### 测试方式
+
+export LD_LIBRARY_PATH=./spacemit-llama.cpp/lib:./spacemit_ort/lib
+
+export SPACEMIT_EP_DENSE_ACCURACY_LEVEL=1
+
+以qwen3vlencoder为例
+```bash
+llama-server -m qwen3vl-30b-text-q4_1.gguf --media-backend smt --smt-config-dir ./ -ctk f16 -ctv f16 -t 8 -c 1024 --host 0.0.0.0 --port 8080 --reasoning-budget 0 --reasoning off
+```
+详细参数含义见llama.cpp.md
+
+### VLM
+
+- K3
+
+| 模型名 | 图像规格 | vision_encoder 4 Core/ms | vision_encoder 8 Core/ms |
+| --- | --- | --- | --- |
+| fastvlm-0.5B | 512*512 | 256.47 | 164.50 |
+| Qwen3-VL-30B-A3B | 768*768 | 7928.13 | 4753.55 |
+| Qwen3.5-0.8B | 384*384 | 340.42 | 245.61 |
+| Qwen3.5-2B | 384*384 | 901.56 | 794.03 |
+| Qwen3.5-4B | 384*384 | 904.73 | 798.71 |
+
+### ASR
+
+- K3
+
+| 模型名 | RTF 4 Core | RTF 8 Core |
+| --- | --- | --- |
+| qwen3-ASR-0.6B | 0.089 | 0.087 |
