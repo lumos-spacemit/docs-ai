@@ -18,11 +18,16 @@ sidebar_position: 9
     - [yolov8-seg](#yolov8-seg)
     - [yolov8-pose](#yolov8-pose)
     - [yolov12](#yolov12)
+    - [音频模型](#音频模型)
   - [大模型](#大模型)
     - [测试方式](#测试方式-1)
     - [Qwen](#qwen)
     - [HunYuan](#hunyuan)
     - [Llama](#llama)
+  - [多模态大模型](#多模态大模型)
+    - [vlm测试方式](#vlm测试方式)
+    - [VLM](#vlm)
+    - [ASR](#asr)
 
 ## 基础模型
 - K1
@@ -239,6 +244,22 @@ P999 Latency: 0.00730163 s
 | yolo12s | int8 | 640x640 | 218.19 | 117.37 | 68.71 | 48.16 |
 | yolo12m | int8 | 640x640 | 428.03 | 228.18 | 130.62 | 89.44 |
 
+### 音频模型
+
+-K1
+
+| 模型名 | type | 4 Core/rtf |
+| --- | --- | --- |
+| melotts | dynamicquant  | 1.497 |
+| sensevoice | dynamicquant | 0.683 |
+
+-K3
+
+| 模型名 | type | 4 Core/rtf | 8 Core/rtf |
+| --- | --- | --- | --- |
+| melotts | dynamicquant  | 2.880 | 2.835 |
+| sensevoice | dynamicquant | 0.337 | 0.252 |
+
 ## 大模型
 
 - K3
@@ -303,7 +324,7 @@ CPU_RISCV64_SPACEMIT: failed to allocate init_barrier from shared mem, falling b
 >- OS：bianbu-4.0rc3
 >- date：2026-5-26
 
-### 测试方式
+### vlm测试方式
 
 
 > 以qwen3vlencoder为例
