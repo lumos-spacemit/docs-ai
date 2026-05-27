@@ -305,15 +305,16 @@ CPU_RISCV64_SPACEMIT: failed to allocate init_barrier from shared mem, falling b
 
 ### 测试方式
 
-export LD_LIBRARY_PATH=./spacemit-llama.cpp/lib:./spacemit_ort/lib
 
+> 以qwen3vlencoder为例
+
+```bash
+export LD_LIBRARY_PATH=./spacemit-llama.cpp/lib:./spacemit_ort/lib
 export SPACEMIT_EP_DENSE_ACCURACY_LEVEL=1
 
-以qwen3vlencoder为例
-```bash
 llama-server -m qwen3vl-30b-text-q4_1.gguf --media-backend smt --smt-config-dir ./ -ctk f16 -ctv f16 -t 8 -c 1024 --host 0.0.0.0 --port 8080 --reasoning-budget 0 --reasoning off
 ```
-详细参数含义见llama.cpp.md
+> 详细参数含义见llama.cpp.md
 
 ### VLM
 
@@ -331,6 +332,6 @@ llama-server -m qwen3vl-30b-text-q4_1.gguf --media-backend smt --smt-config-dir 
 
 - K3
 
-| 模型名 | RTF 4 Core | RTF 8 Core |
+| 模型名 | 4 Core/rtf | 4 Core/rtf |
 | --- | --- | --- |
 | qwen3-ASR-0.6B | 0.089 | 0.087 |
